@@ -159,10 +159,16 @@ impl Cache {
 
                 if let Some(color) = color {
                     rgba.chunks_exact_mut(4).for_each(|rgba| {
-                        if rgba[3] > 0 {
-                            rgba[0] = color[0];
-                            rgba[1] = color[1];
-                            rgba[2] = color[2];
+                        let a = rgba[3] as u16;
+                        if a > 0 {
+                            // The pixmap is premultiplied alpha. Overwriting RGB
+                            // with the straight tint while keeping the premultiplied
+                            // coverage over-weights anti-aliased edge pixels, making
+                            // tinted icons look dark and blurry. Premultiply the tint
+                            // by the existing coverage so edges stay crisp.
+                            rgba[0] = (color[0] as u16 * a / 255) as u8;
+                            rgba[1] = (color[1] as u16 * a / 255) as u8;
+                            rgba[2] = (color[2] as u16 * a / 255) as u8;
                         }
                     });
                 }

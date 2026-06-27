@@ -159,8 +159,14 @@ impl Compositor {
         ];
 
         let limits = limits.into_iter().map(|limits| wgpu::Limits {
-            max_bind_groups: 2,
+            // octaboard fork: the embedded board renderer needs ≥3 bind groups
+            // (SDF text uses group 2) and large storage buffers (icon/emoji
+            // atlases), so relax iced's conservative defaults.
+            max_bind_groups: 4,
             max_non_sampler_bindings: 2048,
+            max_storage_buffer_binding_size: adapter
+                .limits()
+                .max_storage_buffer_binding_size,
             ..limits
         });
 

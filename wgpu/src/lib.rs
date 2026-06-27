@@ -916,7 +916,11 @@ impl renderer::Headless for Renderer {
                 label: Some("iced_wgpu [headless]"),
                 required_features: wgpu::Features::empty(),
                 required_limits: wgpu::Limits {
-                    max_bind_groups: 2,
+                    // octaboard fork: see compositor.rs — relax for the board renderer.
+                    max_bind_groups: 4,
+                    max_storage_buffer_binding_size: adapter
+                        .limits()
+                        .max_storage_buffer_binding_size,
                     ..wgpu::Limits::default()
                 },
                 memory_hints: wgpu::MemoryHints::MemoryUsage,
